@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Huffman Coding Algorithm Visualizer | ICE 245 Hand-Note System</title>
+  <meta name="description" content="Tactile, step-by-step interactive Huffman Coding visualizer matching class hand notes. Tap the tree frame to reveal part by part.">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-wrap">
+      <div class="brand-seal">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+          <circle cx="12" cy="5" r="3"/>
+          <circle cx="6" cy="19" r="3"/>
+          <circle cx="18" cy="19" r="3"/>
+          <line x1="12" y1="8" x2="6" y2="16"/>
+          <line x1="12" y1="8" x2="18" y2="16"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Huffman Coding Algorithm</h1>
+        <div style="display:flex; align-items:center; gap:0.4rem; margin-top:2px;">
+          <span class="course-pill">ICE 245 PROJECT</span>
+          <span style="font-size:0.74rem; color:var(--text-dim);">Hand-Note Interactive System</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme Switcher -->
+    <button id="theme-btn" class="theme-toggle-btn" title="Switch Theme (Graphite Chalkboard / Engineering Paper)">
+      <span id="theme-icon">🌙</span>
+      <span id="theme-text">Graphite Chalk</span>
+    </button>
+  </header>
+
+  <!-- Main Body -->
+  <main class="app-body">
+
+    <!-- Top Input & Presets Bar -->
+    <section class="input-strip">
+      <div class="input-row">
+        <input type="text" id="main-input" class="input-field" value="a:45, b:13, c:12, d:16, e:9, f:5" placeholder="Enter frequencies (e.g. a:45, b:13, c:12, d:16, e:9, f:5) or text/digits...">
+        <button id="btn-build" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Build Huffman Tree
+        </button>
+      </div>
+
+      <!-- Quick Presets -->
+      <div class="preset-row">
+        <span>Quick Presets:</span>
+        <button class="preset-chip active" data-val="a:45, b:13, c:12, d:16, e:9, f:5">★ Teacher's Hand Note (a:45, b:13, c:12, d:16, e:9, f:5)</button>
+        <button class="preset-chip" data-val="12452245112">Numbers: 12452245112</button>
+        <button class="preset-chip" data-val="ICE 245 PROJECT">Text: ICE 245 PROJECT</button>
+        <button class="preset-chip" data-val="ABRACADABRA">Text: ABRACADABRA</button>
+      </div>
+    </section>
+
+    <!-- Tactile Stepper Bar (Hand-Note Timeline) -->
+    <section class="stepper-bar-card">
+      <div class="stepper-header">
+        <div class="step-status-tag">
+          <span id="step-number-tag" class="course-pill" style="background:var(--accent-blue); color:#fff; border:none;">Step 0</span>
+          <span id="step-headline">Initial Leaves</span>
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-dim);">
+          Keyboard: <kbd style="background:var(--bg-card-sub); border:1px solid var(--border-light); padding:2px 5px; border-radius:4px; font-family:var(--font-mono);">Space</kbd> / <kbd style="background:var(--bg-card-sub); border:1px solid var(--border-light); padding:2px 5px; border-radius:4px; font-family:var(--font-mono);">&rarr;</kbd> Next &bull; <kbd style="background:var(--bg-card-sub); border:1px solid var(--border-light); padding:2px 5px; border-radius:4px; font-family:var(--font-mono);">&larr;</kbd> Prev
+        </div>
+      </div>
+
+      <!-- Step Breadcrumb Trail -->
+      <div id="step-trail-container" class="step-trail">
+        <!-- Rendered by app.js -->
+      </div>
+    </section>
+
+    <!-- Two-Column Stage -->
+    <div class="stage-grid">
+
+      <!-- Left / Center: Interactive Tree Frame -->
+      <section class="tree-frame">
+        <div class="tree-frame-header">
+          <div style="font-size:0.88rem; font-weight:700; display:flex; align-items:center; gap:0.4rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+            Huffman Tree Canvas
+          </div>
+
+          <div class="touch-hint-pill">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Touch / Click canvas to advance part-by-part</span>
+          </div>
+        </div>
+
+        <!-- Canvas Viewport with dedicated SVG container layer -->
+        <div class="canvas-viewport" title="Tap canvas to advance next part">
+          <!-- SVG Container (Tree rendered here) -->
+          <div id="tree-canvas-container" class="svg-layer"></div>
+
+          <!-- Floating navigation buttons at bottom left (permanently preserved) -->
+          <div class="canvas-floating-nav no-tap">
+            <button id="float-btn-prev" class="float-btn" title="Previous Part (Left Arrow)">
+              &lsaquo; Prev Part
+            </button>
+            <button id="float-btn-next" class="float-btn" style="background:#2563eb; color:#fff; border-color:#1d4ed8;" title="Next Part (Space or Tap)">
+              Next Part &rsaquo;
+            </button>
+            <button id="float-btn-reset" class="float-btn" title="Reset to Step 0">
+              ↺ Reset
+            </button>
+          </div>
+
+          <!-- Floating canvas tools at bottom right -->
+          <div class="canvas-floating-controls no-tap">
+            <button id="btn-zoom-in" class="float-btn" title="Zoom In">+</button>
+            <button id="btn-zoom-out" class="float-btn" title="Zoom Out">-</button>
+            <button id="btn-fit" class="float-btn" title="Fit Tree to View">Fit</button>
+            <button id="btn-export-svg" class="float-btn" title="Export as SVG">Export</button>
+          </div>
+        </div>
+
+        <!-- Priority Queue Bar underneath canvas -->
+        <div class="queue-strip">
+          <span class="queue-tag">Priority Queue (Min-Heap):</span>
+          <div id="queue-items-container" class="queue-items-flow">
+            <!-- Queue tokens rendered by app.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Side: Course Relevant Results Deck -->
+      <aside class="side-deck">
+
+        <!-- Card 1: Prefix Code Table & Bit Analysis (Hand Note Style) -->
+        <div class="deck-card">
+          <div class="deck-card-title">
+            <span>Prefix Code Table &amp; Bit Calculations</span>
+            <span style="font-size:0.7rem; color:var(--text-dim);">Hover row to trace</span>
+          </div>
+
+          <div class="code-table-scroll">
+            <table class="huffman-table">
+              <thead>
+                <tr>
+                  <th>Symbol</th>
+                  <th>Freq (f)</th>
+                  <th>Huffman Code</th>
+                  <th>Bits (l)</th>
+                  <th>Total (f &times; l)</th>
+                </tr>
+              </thead>
+              <tbody id="code-table-body">
+                <!-- Dynamically generated -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Summary Bit Analysis (Course Relevant) -->
+          <div class="stats-duo" style="margin-top:0.4rem;">
+            <div class="stat-cell">
+              <span class="stat-cell-lbl">Huffman Total Bits (&Sigma; f&times;l)</span>
+              <span id="stat-huff-bits" class="stat-cell-val" style="color:var(--accent-cyan);">- bits</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-cell-lbl">Fixed-Length Total Bits</span>
+              <span id="stat-fixed-bits" class="stat-cell-val" style="color:var(--text-muted);">- bits</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-cell-lbl">Space Saved vs Fixed</span>
+              <span id="stat-saved-percent" class="stat-cell-val" style="color:var(--accent-green);">- %</span>
+            </div>
+            <div class="stat-cell">
+              <span class="stat-cell-lbl">Average Code Length</span>
+              <span id="stat-avg-length" class="stat-cell-val">- b/s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Interactive Message to Binary Encoder & Decoder -->
+        <div class="deck-card">
+          <div class="deck-card-title">
+            <span>Convert Message &harr; Binary</span>
+          </div>
+
+          <div style="font-size:0.75rem; color:var(--text-muted);">
+            Type message using variables (or pick a sample):
+          </div>
+
+          <div style="display:flex; gap:0.35rem; align-items:center; flex-wrap:wrap;">
+            <span style="font-size:0.7rem; color:var(--text-dim);">Samples:</span>
+            <button class="preset-chip test-msg-chip" data-msg="bad">bad</button>
+            <button class="preset-chip test-msg-chip" data-msg="cafe">cafe</button>
+            <button class="preset-chip test-msg-chip" data-msg="fade">fade</button>
+            <button class="preset-chip test-msg-chip" data-msg="abf">abf</button>
+          </div>
+
+          <input type="text" id="test-message-input" class="input-field" value="bad" placeholder="Enter word e.g. bad...">
+
+          <div style="font-size:0.72rem; color:var(--text-dim); margin-top:0.2rem;">
+            Symbol-by-Symbol Translation:
+          </div>
+          <div id="translation-breakdown" style="font-family:var(--font-mono); font-size:0.78rem; color:var(--accent-cyan); background:var(--bg-card-sub); padding:0.4rem 0.65rem; border-radius:var(--radius-sm); border:1px solid var(--border-light);">
+            b(101) + a(0) + d(111)
+          </div>
+
+          <div style="font-size:0.72rem; color:var(--text-dim); margin-top:0.2rem;">
+            Resulting Binary Bitstream:
+          </div>
+          <div id="resulting-bitstream" class="binary-tape">
+            1010111
+          </div>
+
+          <div style="display:flex; gap:0.5rem; margin-top:0.3rem;">
+            <button id="btn-trace-decode" class="btn btn-primary" style="flex:1; padding:0.45rem 0.75rem; font-size:0.8rem;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Trace Decode on Tree
+            </button>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:0.2rem; background:var(--bg-card-sub); padding:0.4rem 0.65rem; border-radius:var(--radius-sm); border:1px solid var(--border-light);">
+            <span style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Decoded Output:</span>
+            <span id="decoded-output-text" style="font-weight:700; font-family:var(--font-mono); color:var(--accent-green); font-size:0.95rem;">
+              bad
+            </span>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <span>ICE 245 Project &bull; Information &amp; Coding Engineering</span>
+    <span>100% Offline Standalone Application</span>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/huffman.js"></script>
+  <script src="js/treeVisualizer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
