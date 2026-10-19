@@ -34,3 +34,4 @@ This project is a 100% offline, tactile educational tool designed for **ICE 245 
 - **Direct Launch**: Double-click [`index.html`](file:///g:/ICE%20245%20PROJECT/index.html).
 - **Windows Launcher**: Double-click [`start.bat`](file:///g:/ICE%20245%20PROJECT/start.bat).
 - **Python Server (Optional)**: Run `python run_offline.py`.
+"# huffman-coding-visualizer" 
